@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>resource/ae.png</file>
+        <file>resource/8.png</file>
+        <file>resource/2.png</file>
+        <file>resource/SEN028.png</file>
+        <file>resource/wb-auto.png</file>
+        <file>resource/11.png</file>
+        <file>resource/run.png</file>
+        <file>resource/6.png</file>
+        <file>resource/0.png</file>
+        <file>resource/12.png</file>
+        <file>resource/14.png</file>
+        <file>resource/3.png</file>
+        <file>resource/9.png</file>
+        <file>resource/leftright.png</file>
+        <file>resource/10.png</file>
+        <file>resource/updown.png</file>
+        <file>resource/lock.png</file>
+        <file>resource/add.png</file>
+        <file>resource/4.png</file>
+        <file>resource/1.png</file>
+        <file>resource/mouse.png</file>
+        <file>resource/7.png</file>
+        <file>resource/ruleicon.png</file>
+        <file>resource/RightAngleRuler.png</file>
+        <file>resource/5.png</file>
+        <file>resource/close.png</file>
+        <file>resource/Caliper.png</file>
+        <file>resource/13.png</file>
+        <file>resource/15.png</file>
+    </qresource>
+</RCC>
