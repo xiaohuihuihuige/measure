@@ -18,12 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     FloatWidget.cpp \
     MainWidget.cpp \
+    RefItem.cpp \
     RightWidget.cpp \
     TopWidget.cpp \
     main.cpp
 HEADERS += \
     FloatWidget.h \
     MainWidget.h \
+    RefItem.h \
     RightWidget.h \
     TopWidget.h
 

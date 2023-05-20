@@ -13,11 +13,17 @@ public:
     QPushButton* pbtnFixed;
     QPushButton* pbtnClose;
     QPushButton* pbtnMouse;
+    QPushButton* pbtnSingleRuler;
+    QPushButton* pbtnCenter;
+    QPushButton* pbtnRightAngleRuler;
 private:
     void setupUI();
     void initConnection();
 signals:
     void sglCloseExe();
+    void sglSingleRunlerChecked(bool);
+    void sglCenterChecked(bool);
+    void sglRightAngleRulerChecked(bool);
 };
 
 #endif // TOPWIDGET_H

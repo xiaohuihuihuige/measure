@@ -4,6 +4,8 @@
 #include <QTabWidget>
 #include <QGroupBox>
 #include <QComboBox>
+#include <QTableWidget>
+#include <QHeaderView>
 
 RightWidget::RightWidget(QWidget *parent) : FloatWidget(parent)
 {
@@ -15,7 +17,7 @@ void RightWidget::setupUI()
 {
     QVBoxLayout* layout = new QVBoxLayout();
     this->setLayout(layout);
-
+    //添加控制页面固定控件
     {
         QHBoxLayout* hLayout = new QHBoxLayout();
         layout->addLayout(hLayout);
@@ -40,10 +42,11 @@ void RightWidget::setupUI()
             QWidget* wgt = new QWidget();
             tabwgt->addTab(wgt,"");
             tabwgt->setTabIcon(0,QIcon(":/icons/resource/Caliper.png"));
+            tabwgt->setIconSize(QSize(40,40));
 
             QVBoxLayout* vLayout = new QVBoxLayout();
             wgt->setLayout(vLayout);
-
+            //添加标定内的控件
             {
                 QGroupBox* grpbox = new QGroupBox("Scale");
                 QHBoxLayout* hLayout = new QHBoxLayout();
@@ -60,7 +63,7 @@ void RightWidget::setupUI()
                 cbboxDanwei->addItems(QStringList() << "pixel" << "mm");
                 hLayout->addWidget(cbboxDanwei);
             }
-
+            //添加绘图按钮
             {
                 QGroupBox* grpbox1 = new QGroupBox("measure tool");
                 QGridLayout* gLayout = new QGridLayout();
@@ -69,14 +72,14 @@ void RightWidget::setupUI()
                 for(int i = 0; i < 16; ++i){
                     QPushButton* pbtn1 = new QPushButton();
                     pbtn1->setCheckable(true);
-                    pbtn1->setMinimumSize(25,25);
+                    pbtn1->setMinimumSize(40,40);
                     pbtn1->setIcon(QIcon(QString(":/icons/resource/%1.png").arg(i)));
-                    pbtn1->setIconSize(QSize(25,25));
+                    pbtn1->setIconSize(QSize(40,40));
                     gLayout->addWidget(pbtn1, i / 4, i % 4);
                     lstBtn << pbtn1;
                 }
             }
-
+            //田间assist tool内的控件
             {
                 QGroupBox* grpbox2 = new QGroupBox("assist tool");
                 QHBoxLayout* hLayout1 = new QHBoxLayout();
@@ -102,12 +105,19 @@ void RightWidget::setupUI()
                 box->setMinimumWidth(40);
                 hLayout1->addWidget(box);
             }
-
-
-
+            //添加表格
+            {
+                QTableWidget* tblwgt = new QTableWidget();
+                vLayout->addWidget(tblwgt);
+                tblwgt->setMinimumSize(200,400);
+                tblwgt->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+                QStringList lisHeader = QStringList() << "show" << "item" << "info";
+                for(int i = 0; i < lisHeader.size(); ++i){
+                    tblwgt->insertColumn(i);
+                }
+                tblwgt->setHorizontalHeaderLabels(lisHeader);
+            }
         }
-
-
     }
     layout->addStretch();
     this->setWindowFlag(Qt::FramelessWindowHint);
@@ -116,6 +126,7 @@ void RightWidget::setupUI()
 
 void RightWidget::initConnection()
 {
+    //固定还是隐藏按钮槽
     connect(pbtnFixed, &QPushButton::clicked, this, [this](){
         setHideAuto(!m_bHideAuto);
         if(m_bHideAuto){

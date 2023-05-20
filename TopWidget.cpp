@@ -59,26 +59,29 @@ void TopWidget::setupUI()
     pbtnud->setIconSize(QSize(50,50));
     layout->addWidget(pbtnud);
 
-    QPushButton* pbtnRightAngleRule = new QPushButton();
-    pbtnRightAngleRule->setCheckable(true);
-    pbtnRightAngleRule->setMinimumSize(50,50);
-    pbtnRightAngleRule->setIcon(QIcon(":/icons/resource/RightAngleRuler.png"));
-    pbtnRightAngleRule->setIconSize(QSize(50,50));
-    layout->addWidget(pbtnRightAngleRule);
+    pbtnRightAngleRuler = new QPushButton();
+    pbtnRightAngleRuler->setCheckable(true);
+    pbtnRightAngleRuler->setChecked(true);
+    pbtnRightAngleRuler->setMinimumSize(50,50);
+    pbtnRightAngleRuler->setIcon(QIcon(":/icons/resource/RightAngleRuler.png"));
+    pbtnRightAngleRuler->setIconSize(QSize(50,50));
+    layout->addWidget(pbtnRightAngleRuler);
 
-    QPushButton* pbtnadd = new QPushButton();
-    pbtnadd->setCheckable(true);
-    pbtnadd->setMinimumSize(50,50);
-    pbtnadd->setIcon(QIcon(":/icons/resource/add.png"));
-    pbtnadd->setIconSize(QSize(50,50));
-    layout->addWidget(pbtnadd);
+    pbtnCenter = new QPushButton();
+    pbtnCenter->setCheckable(true);
+    pbtnCenter->setChecked(true);
+    pbtnCenter->setMinimumSize(50,50);
+    pbtnCenter->setIcon(QIcon(":/icons/resource/add.png"));
+    pbtnCenter->setIconSize(QSize(50,50));
+    layout->addWidget(pbtnCenter);
 
-    QPushButton* pbtnrule = new QPushButton();
-    pbtnrule->setCheckable(true);
-    pbtnrule->setMinimumSize(50,50);
-    pbtnrule->setIcon(QIcon(":/icons/resource/ruleicon.png"));
-    pbtnrule->setIconSize(QSize(50,50));
-    layout->addWidget(pbtnrule);
+    pbtnSingleRuler = new QPushButton();
+    pbtnSingleRuler->setCheckable(true);
+    pbtnSingleRuler->setChecked(true);
+    pbtnSingleRuler->setMinimumSize(50,50);
+    pbtnSingleRuler->setIcon(QIcon(":/icons/resource/ruleicon.png"));
+    pbtnSingleRuler->setIconSize(QSize(50,50));
+    layout->addWidget(pbtnSingleRuler);
 
     pbtnClose = new QPushButton();
     pbtnClose->setMinimumSize(50,50);
@@ -102,6 +105,15 @@ void TopWidget::initConnection()
     });
     connect(pbtnClose, &QPushButton::clicked, this, [this](){
         emit sglCloseExe();
+    });
+    connect(pbtnSingleRuler, &QPushButton::clicked, this, [this](bool checked){
+        emit sglSingleRunlerChecked(checked);
+    });
+    connect(pbtnCenter, &QPushButton::clicked, this, [this](bool checked){
+        emit sglCenterChecked(checked);
+    });
+    connect(pbtnRightAngleRuler, &QPushButton::clicked, this, [this](bool checked){
+        emit sglRightAngleRulerChecked(checked);
     });
 
 }

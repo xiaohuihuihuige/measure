@@ -2,7 +2,8 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QButtonGroup>
-
+#include "RulerWidget.h"
+#include <QGraphicsProxyWidget>
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
@@ -13,10 +14,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
 void MainWidget::setupUI()
 {
-    this->resize(900,800);
-    this->move(500,300);
-//    this->showFullScreen();
+    this->resize(1200,950);
+    this->move(200,50);
+    this->showFullScreen();
     QHBoxLayout* hLayout = new QHBoxLayout();
+    hLayout->setContentsMargins(0,0,0,0);
     this->setLayout(hLayout);
     this->setWindowFlags(Qt::FramelessWindowHint);
 
@@ -45,12 +47,70 @@ void MainWidget::setupUI()
     const short activeWidth = 10;
     topActiveRect = QRect(topwgt->pos().x(), this->y(), topwgt->width(), activeWidth);
     rightActiveRect = QRect(this->pos().x() + this->width() - activeWidth, rightwgt->pos().y(),activeWidth,rightwgt->height());
+
+    m_view = new QGraphicsView();
+    m_view->setMouseTracking(true);
+    m_view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    hLayout->addWidget(m_view);
+
+    QGraphicsScene* scene = new QGraphicsScene;
+    scene->setSceneRect(0,0, this->width()-5, this->height()-5);
+    m_view->setScene(scene);
+
+//    RulerWidget* rulerV = new RulerWidget(Qt::Vertical);
+//    rulerV->resize(100,this->height());
+//    QGraphicsProxyWidget *pWidgetV = scene->addWidget(rulerV);
+//    pWidgetV->setPos(0,0);
+//    pWidgetV->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+
+//    RulerWidget* rulerH = new RulerWidget(Qt::Horizontal);
+//    rulerH->resize(this->width(),100);
+//    QGraphicsProxyWidget *pWidgetH = scene->addWidget(rulerH);
+//    pWidgetH->setPos(0,0);
+//    pWidgetH->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+
+    m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    m_rulerH = new RulerItem(Qt::Horizontal);
+    m_rulerH->setWidth(this->width()-5);
+    m_rulerH->setHeight(100);
+    scene->addItem(m_rulerH);
+
+    m_rulerV = new RulerItem(Qt::Vertical);
+    m_rulerV->setWidth(100);
+    m_rulerV->setHeight(this->height());
+    scene->addItem(m_rulerV);
+
+    m_centerLine = new CenterLine;
+    m_centerLine->setWidth(scene->width());
+    m_centerLine->setHeight(scene->height());
+    scene->addItem(m_centerLine);
+
+    m_singleItem = new SingleLongItem;
+    m_singleItem->setWidth(100);
+    m_singleItem->setHeight(60);
+    m_singleItem->setText("100pixel");
+    m_singleItem->setPos(QPoint(100,900));
+
+    scene->addItem(m_singleItem);
+
 }
 
 void MainWidget::initConnection()
 {
     connect(topwgt, &TopWidget::sglCloseExe, this, [this](){
         close();
+    });
+    connect(topwgt,&TopWidget::sglCenterChecked,this, [this](bool checked){
+        m_centerLine->setVisible(checked);
+    });
+    connect(topwgt,&TopWidget::sglRightAngleRulerChecked,this, [this](bool checked){
+        m_rulerV->setVisible(checked);
+        m_rulerH->setVisible(checked);
+    });
+    connect(topwgt,&TopWidget::sglSingleRunlerChecked,this, [this](bool checked){
+        m_singleItem->setVisible(checked);
     });
 }
 

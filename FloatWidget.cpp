@@ -17,8 +17,10 @@ FloatWidget::FloatWidget(QWidget *parent)
                         "QPushButton{background-color:#333333;}"
                         "QPushButton::checked{background-color:#999999;}"
                         "QPushButton::hover{background-color:#666666;}"
-                        "QTabBar::tab{background-color:#333333;}"
-                        "QComboBox{background-color:#333333;}");
+                        "QTabBar::tab{background-color:#444444;}"
+                        "QTabWidget QWidget{background-color:#444444;}"
+                        "QComboBox{background-color:#333333;}"
+                        "QHeaderView::section{background-color:#333333;}");
 }
 
 void FloatWidget::setParentRect(QRect rect)
@@ -35,7 +37,7 @@ void FloatWidget::setDisplayPos(DisplayPos pos)
 
 void FloatWidget::calLeftTopPos()
 {
-    const short space = 20;
+    const short space = 10;
     switch(m_pos){
     case DisplayPos_Top:
         m_iLeftTopPosX = m_rectParent.x() + m_rectParent.width() / 2 - m_iWidgetWidth / 2;
