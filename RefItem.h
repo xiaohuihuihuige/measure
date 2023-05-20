@@ -85,7 +85,60 @@ private:
     Q_PROPERTY(QPoint pos READ pos WRITE setPos NOTIFY posChanged)
 };
 
+class LineItem : public RefItem
+{
+    Q_OBJECT
 
+public:
+    explicit LineItem(QObject *parent = nullptr);
+    enum LineType{
+        LineType_Any = 0,
+        LineType_Hor,
+        LineType_Ver,
+    };
+    LineType m_lineType = LineType_Any;//1:任意线，2、水平线
+    QFont m_font{"微软雅黑",12};
+    double m_lineLength;
+    bool m_showText = true;
+    QPoint m_startPoint;
+    QPoint m_endPoint;
+
+    virtual void paint(QPainter *painter,
+                           const QStyleOptionGraphicsItem *option,
+                       QWidget *widget) override;
+
+    LineType lineType() const;
+    void setLineType(LineType newLineType);
+    double lineLength() const;
+
+    bool showText() const;
+    void setShowText(bool newShowText);
+
+    QPoint startPoint() const;
+    void setStartPoint(QPoint newStartPoint);
+
+    QPoint endPoint() const;
+    void setEndPoint(QPoint newEndPoint);
+
+        virtual QRectF boundingRect() const override;
+
+signals:
+    void lineTypeChanged();
+    void lineLengthChanged();
+
+    void showTextChanged();
+
+    void startPointChanged();
+
+    void endPointChanged();
+
+private:
+    Q_PROPERTY(LineType lineType READ lineType WRITE setLineType NOTIFY lineTypeChanged)
+    Q_PROPERTY(double lineLength READ lineLength NOTIFY lineLengthChanged)
+    Q_PROPERTY(bool showText READ showText WRITE setShowText NOTIFY showTextChanged)
+    Q_PROPERTY(QPoint startPoint READ startPoint WRITE setStartPoint NOTIFY startPointChanged)
+    Q_PROPERTY(QPoint endPoint READ endPoint WRITE setEndPoint NOTIFY endPointChanged)
+};
 
 
 #endif // REFITEM_H

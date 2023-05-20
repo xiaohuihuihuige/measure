@@ -39,6 +39,7 @@ QRectF RefItem::boundingRect() const
 //    return this->sceneBoundingRect();
 }
 
+//画十字线
 CenterLine::CenterLine(QObject *parent)
     : RefItem{parent}
 {
@@ -57,7 +58,7 @@ void CenterLine::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 }
 
-
+//画标尺
 RulerItem::RulerItem(Qt::Orientations orientation, QObject *parent)
     : RefItem{parent},
       m_orientation(orientation)
@@ -126,6 +127,7 @@ void RulerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     }
 }
 
+//单位长度刻度
 SingleLongItem::SingleLongItem(QObject *parent)
 {
 
@@ -180,3 +182,102 @@ void SingleLongItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     //文字
     painter->drawText(QRectF(rect.x(),rect.y(),rect.width(),height2-10),Qt::AlignCenter | Qt::TextWordWrap, m_text);
 }
+
+LineItem::LineItem(QObject *parent)
+{
+
+}
+
+QPoint LineItem::endPoint() const
+{
+    return m_endPoint;
+}
+
+void LineItem::setEndPoint(QPoint newEndPoint)
+{
+    m_endPoint = newEndPoint;
+    emit endPointChanged();
+    update();
+}
+
+QRectF LineItem::boundingRect() const
+{
+//    return this->sceneBoundingRect();
+    float x = std::min(m_startPoint.x() - 20,m_endPoint.x() - 20);
+    float y = std::min(m_startPoint.y() - 20,m_endPoint.y() - 20);
+    float width = abs(m_startPoint.x() - m_endPoint.x()) + 250;
+    float height = abs(m_startPoint.y() - m_endPoint.y()) + 40;
+
+    return QRectF(x,y,width,height);
+
+
+}
+
+QPoint LineItem::startPoint() const
+{
+    return m_startPoint;
+}
+
+void LineItem::setStartPoint(QPoint newStartPoint)
+{
+    if (m_startPoint == newStartPoint)
+        return;
+    m_startPoint = newStartPoint;
+    m_endPoint = m_startPoint;
+    emit startPointChanged();
+    update();
+}
+
+bool LineItem::showText() const
+{
+    return m_showText;
+}
+
+void LineItem::setShowText(bool newShowText)
+{
+    if (m_showText == newShowText)
+        return;
+    m_showText = newShowText;
+    emit showTextChanged();
+}
+
+void LineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    painter->setPen(this->pen());
+    painter->setBrush(this->brush());
+    painter->setFont(m_font);
+    //画端点
+    painter->drawEllipse(m_startPoint,5,5);
+    painter->drawEllipse(m_endPoint,5,5);
+    //画线
+    painter->drawLine(m_startPoint,m_endPoint);
+//    //文字
+    if(m_showText){
+        QString str = "distance:" + QString::number(QLineF(m_startPoint,m_endPoint).length(),'f', 3);
+        QRectF ret = QRectF(m_startPoint.x(),m_startPoint.y()-20,200,20);
+        painter->drawText(ret,Qt::AlignCenter | Qt::TextWordWrap, str);
+        painter->drawRoundedRect(ret,5,5);
+    }
+}
+
+double LineItem::lineLength() const
+{
+    return m_lineLength;
+}
+
+
+LineItem::LineType LineItem::lineType() const
+{
+    return m_lineType;
+}
+
+void LineItem::setLineType(LineType newLineType)
+{
+    if (m_lineType == newLineType)
+        return;
+    m_lineType = newLineType;
+    emit lineTypeChanged();
+}
+

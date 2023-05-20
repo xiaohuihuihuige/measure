@@ -27,6 +27,7 @@ void TopWidget::setupUI()
     pbtnMouse = new QPushButton();
     pbtnMouse->setMinimumSize(50,50);
     pbtnMouse->setCheckable(true);
+    pbtnMouse->setChecked(true);
     pbtnMouse->setIcon(QIcon(":/icons/resource/mouse.png"));
     pbtnMouse->setIconSize(QSize(50,50));
     layout->addWidget(pbtnMouse);

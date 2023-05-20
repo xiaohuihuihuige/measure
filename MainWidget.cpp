@@ -2,10 +2,9 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QButtonGroup>
-#include "RulerWidget.h"
 #include <QGraphicsProxyWidget>
 
-MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
+MainWidget::MainWidget(QWidget *parent) : QGraphicsView(parent)
 {
     setupUI();
     setMouseTracking(true);
@@ -14,13 +13,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 
 void MainWidget::setupUI()
 {
-    this->resize(1200,950);
+    this->resize(1200,700);
     this->move(200,50);
     this->showFullScreen();
-    QHBoxLayout* hLayout = new QHBoxLayout();
-    hLayout->setContentsMargins(0,0,0,0);
-    this->setLayout(hLayout);
     this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setDragMode(QGraphicsView::RubberBandDrag);
 
     topwgt = new TopWidget();
     topwgt->setDisplayPos(DisplayPos_Top);
@@ -36,11 +33,11 @@ void MainWidget::setupUI()
     rightwgt->setParentRect(this->frameGeometry());
     rightwgt->show();
 
-    QButtonGroup* btngrp = new QButtonGroup();
-    btngrp->addButton(topwgt->pbtnMouse);
+    btngrp = new QButtonGroup();
     for(int i = 0; i < rightwgt->lstBtn.size(); ++i){
-        btngrp->addButton(rightwgt->lstBtn.at(i));
+        btngrp->addButton(rightwgt->lstBtn.at(i),i);
     }
+    btngrp->addButton(topwgt->pbtnMouse,20);
 
 
     //计算鼠标移动弹出的区域
@@ -48,29 +45,14 @@ void MainWidget::setupUI()
     topActiveRect = QRect(topwgt->pos().x(), this->y(), topwgt->width(), activeWidth);
     rightActiveRect = QRect(this->pos().x() + this->width() - activeWidth, rightwgt->pos().y(),activeWidth,rightwgt->height());
 
-    m_view = new QGraphicsView();
-    m_view->setMouseTracking(true);
-    m_view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    hLayout->addWidget(m_view);
 
     QGraphicsScene* scene = new QGraphicsScene;
-    scene->setSceneRect(0,0, this->width()-5, this->height()-5);
-    m_view->setScene(scene);
+    scene->setSceneRect(0,0, this->width(), this->height());
+    this->setScene(scene);
 
-//    RulerWidget* rulerV = new RulerWidget(Qt::Vertical);
-//    rulerV->resize(100,this->height());
-//    QGraphicsProxyWidget *pWidgetV = scene->addWidget(rulerV);
-//    pWidgetV->setPos(0,0);
-//    pWidgetV->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
 
-//    RulerWidget* rulerH = new RulerWidget(Qt::Horizontal);
-//    rulerH->resize(this->width(),100);
-//    QGraphicsProxyWidget *pWidgetH = scene->addWidget(rulerH);
-//    pWidgetH->setPos(0,0);
-//    pWidgetH->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-
-    m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     m_rulerH = new RulerItem(Qt::Horizontal);
     m_rulerH->setWidth(this->width()-5);
@@ -112,10 +94,29 @@ void MainWidget::initConnection()
     connect(topwgt,&TopWidget::sglSingleRunlerChecked,this, [this](bool checked){
         m_singleItem->setVisible(checked);
     });
+    connect(btngrp,&QButtonGroup::idClicked,this,[this](int id){
+        switch(id){
+        case 20:
+            m_drawType = 0;
+            break;
+        default:
+            m_drawType = 1;
+        break;
+
+        }
+    });
+
 }
 
 void MainWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    if(m_drawType == 1){
+        if(m_drawEnable){
+            LineItem* item =dynamic_cast<LineItem*>(m_lstItem.at(m_lstItem.size() - 1));
+            item->setEndPoint(event->pos());
+            this->scene()->update();
+        }
+    }
     if(topActiveRect.contains(event->globalPos())){
         topwgt->show();
     }
@@ -123,5 +124,42 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event)
     if(rightActiveRect.contains(event->globalPos())){
         rightwgt->show();
     }
+
+}
+
+
+
+void MainWidget::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton){
+        if(m_drawType == 1 ){
+            m_clickNum++;
+            if(m_clickNum == 1){
+                m_drawEnable = true;
+                LineItem* line = new LineItem;
+                m_lstItem << line;
+                line->setLineType(LineItem::LineType_Any);
+                line->setShowText(true);
+                line->setStartPoint(event->pos());
+                line->setAcceptHoverEvents(true);
+                line->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+                this->scene()->addItem(line);
+            } else if(m_clickNum == 2){
+                if(m_drawEnable){
+                    LineItem* item =dynamic_cast<LineItem*>(m_lstItem.at(m_lstItem.size() - 1));
+                    item->setEndPoint(event->pos());
+                    m_drawEnable = false;
+                    m_clickNum = 0;
+                    this->scene()->update();
+                }
+            }
+        }
+
+
+    }
+}
+
+void MainWidget::mouseReleaseEvent(QMouseEvent *event)
+{
 
 }
